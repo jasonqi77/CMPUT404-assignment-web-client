@@ -38,17 +38,14 @@ class HTTPClient(object):
 
     def connect(self, host, port):
         # use sockets!
-	if not port:
+         if not port:
             port = 80
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((host, port))
         return s
 
     def get_code(self, data):
-        code = data.split()
-	print "####"
-	print code
-	print "####"
+        code = data.split(' ')
 	return int(code[1])
 
 
@@ -81,7 +78,6 @@ class HTTPClient(object):
 	msg += "Connection: close\r\n\r\n" 
 	s.send(msg)
 	response = self.recvall(s)
-	s.close()
 	code = self.get_code(response)
 	body = self.get_body(response)      
         return HTTPRequest(code, body)
@@ -89,26 +85,21 @@ class HTTPClient(object):
     def POST(self, url, args=None):       
         parseUrl = urlparse(url)
         s = self.connect(parseUrl.hostname, parseUrl.port)
-	if (args == None):
+	if (args = None):
 		content = ""
 	else:
 		content = urllib.urlencode(args)
-		
 	content_length = len(content) 
 	msg = "POST %s HTTP/1.1\r\n" % (parseUrl.path)
 	msg += "Host: %s\r\n" % (parseUrl.hostname)
 	msg += "Accept: */*\r\n"
 	msg += "Content-Type: application/x-www-form-urlencoded\r\n"
-	msg += "Content-Length: %s\r\n\r\n" % (str(content_length))
+	msg += "Content-LengthL: %s\r\n\r\n" % (str(content_length))
 	msg += "%s\r\n" % (content)
 	s.send(msg)
-	response = self.recvall(s)
-	print "!!!"
-	print msg
-	print "!!!"
-	s.close()
-	code = self.get_code(response)
-	body = self.get_body(response)
+	msg = self.recvall(s)
+	code = self.get_code(msg)
+	body = self.get_body(msg)
         return HTTPRequest(code, body)
 
     def command(self, url, command="GET", args=None):
